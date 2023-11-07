@@ -1,0 +1,8 @@
+Para realizar chamada para listar usuários 
+
+Número de registros:
+http://localhost:8080/user?size=10&page=1
+
+Ordenação:
+http://localhost:8080/user?sort=criationDate
+http://localhost:8080/user?sort=criationDate,desc

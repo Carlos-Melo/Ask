@@ -23,7 +23,7 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private boolean isActive;
+    private Boolean isActive;
     private byte[] image;
 
     @Enumerated(EnumType.STRING)
@@ -33,7 +33,7 @@ public class User {
 
     public User(UserCreate data) {
         this.name = data.name();
-        this.email = data.name();
+        this.email = data.email();
         this.password = data.password();
         this.isActive = false;
         this.userType = UserType.USER;

@@ -3,11 +3,14 @@ package ask.api.controller;
 import ask.api.post.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -16,35 +19,48 @@ import java.util.Optional;
 public class PostController {
 
     @Autowired
-    PostRepository repository;
+    PostRepository postRepository;
 
     @PostMapping
     @Transactional
-    public void create(@RequestBody @Valid PostCreate post) {
-        repository.save(new Post(post));
+    public ResponseEntity create(@RequestBody @Valid PostCreate data, UriComponentsBuilder uriBulder) {
+        var post = new Post(data);
+        postRepository.save(post);
+
+        var uri = uriBulder.path("/post/{id}").buildAndExpand(post.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(post);
     }
 
     @GetMapping
-    public Page<PostList> list(@PageableDefault(sort = "criationDate") Pageable pageable) {
-        return repository.findAll(pageable).map(PostList::new);
+    public ResponseEntity<Page<PostList>> list(@PageableDefault(sort = "criationDate") Pageable pageable) {
+        var post = postRepository.findAll(pageable).map(PostList::new);
+
+        return ResponseEntity.ok(post);
     }
 
-    @GetMapping("/id")
-    public Optional<Post> getPost(@PathVariable Long id) {
-        return repository.findById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDetail> getPost(@PathVariable Long id) {
+        var post = postRepository.getReferenceById(id);
+
+        return ResponseEntity.ok(new PostDetail(post));
     }
 
     @PutMapping
     @Transactional
-    public void update(@RequestBody @Valid PostUpdate data) {
-        var post = repository.getReferenceById(data.id());
+    public ResponseEntity<PostDetail> update(@RequestBody @Valid PostUpdate data) {
+        var post = postRepository.getReferenceById(data.id());
         post.updatePost(data);
+
+        return ResponseEntity.ok(new PostDetail(post));
     }
 
     @DeleteMapping("/id")
     @Transactional
-    public void delete(@PathVariable Long id) {
-        repository.deleteById(id);
+    public ResponseEntity delete(@PathVariable Long id) {
+        postRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

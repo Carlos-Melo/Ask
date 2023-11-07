@@ -2,6 +2,7 @@ package ask.api.comment;
 
 import ask.api.post.Post;
 import ask.api.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

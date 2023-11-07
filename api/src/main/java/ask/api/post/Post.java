@@ -2,6 +2,7 @@ package ask.api.post;
 
 import ask.api.comment.Comment;
 import ask.api.user.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public class Post {
     @ManyToOne
     private User user;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Comment> comment = new ArrayList<>();
 
     public Post(PostCreate post) {

@@ -2,6 +2,7 @@ package ask.api.comment;
 
 import ask.api.post.Post;
 import ask.api.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class Comment {
     @ManyToOne
     private User user;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JsonBackReference
     private Post post;
 
     public Comment(CommentCreate comment) {
