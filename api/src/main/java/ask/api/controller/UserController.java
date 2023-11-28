@@ -1,9 +1,10 @@
 package ask.api.controller;
 
-import ask.api.user.*;
+import ask.api.domain.user.*;
+import ask.api.domain.user.dto.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
+@SecurityRequirement(name = "bearer-key")
 public class UserController {
 
     @Autowired
@@ -24,6 +26,11 @@ public class UserController {
     @PostMapping
     @Transactional
     public ResponseEntity create(@RequestBody @Valid UserCreate data, UriComponentsBuilder uriBuilder) {
+
+        if(repository.existsByEmail(data.email())) {
+            throw new RuntimeException("Usuário já cadastrado!");
+        }
+
         var user = new User(data);
         repository.save(user);
 
@@ -41,9 +48,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetail> returnOne(@PathVariable Long id) {
-        var user = repository.getReferenceById(id);
+        Optional<User> user = repository.findById(id);
 
-        return ResponseEntity.ok(new UserDetail(user));
+        if(user.isEmpty() || !user.get().getIsActive()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new UserDetail(user.get()));
     }
 
     @PutMapping

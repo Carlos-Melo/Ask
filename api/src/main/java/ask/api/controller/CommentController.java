@@ -1,6 +1,11 @@
 package ask.api.controller;
 
-import ask.api.comment.*;
+import ask.api.domain.comment.*;
+import ask.api.domain.comment.dto.CommentCreate;
+import ask.api.domain.comment.dto.CommentDetail;
+import ask.api.domain.comment.dto.CommentList;
+import ask.api.domain.comment.dto.CommentUpdate;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("comment")
+@SecurityRequirement(name = "bearer-key")
 public class CommentController {
 
     @Autowired
@@ -38,7 +42,6 @@ public class CommentController {
     @GetMapping("/{id}")
     public ResponseEntity<CommentDetail> getComment(@PathVariable Long id) {
         var comment = repository.getReferenceById(id);
-
         return ResponseEntity.ok(new CommentDetail(comment));
     }
 
@@ -51,7 +54,7 @@ public class CommentController {
         return ResponseEntity.ok(new CommentDetail(comment));
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity delete(@PathVariable Long id){
         repository.deleteById(id);

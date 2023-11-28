@@ -1,9 +1,13 @@
 package ask.api.controller;
 
-import ask.api.post.*;
+import ask.api.domain.post.*;
+import ask.api.domain.post.dto.PostCreate;
+import ask.api.domain.post.dto.PostDetail;
+import ask.api.domain.post.dto.PostList;
+import ask.api.domain.post.dto.PostUpdate;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("post")
+@SecurityRequirement(name = "bearer-key")
 public class PostController {
 
     @Autowired
@@ -55,7 +58,7 @@ public class PostController {
         return ResponseEntity.ok(new PostDetail(post));
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity delete(@PathVariable Long id) {
         postRepository.deleteById(id);
