@@ -17,8 +17,8 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name = "user")
-@Entity(name = "User")
+@Table(name = "users")
+@Entity(name = "Users")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
