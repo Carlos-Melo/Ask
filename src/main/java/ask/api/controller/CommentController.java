@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("comment")
+@RequestMapping("/comment")
 @SecurityRequirement(name = "bearer-key")
 public class CommentController {
 
