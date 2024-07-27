@@ -21,7 +21,7 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserRepository repository;
+    private UsersRepository repository;
 
     @PostMapping
     @Transactional
@@ -31,7 +31,7 @@ public class UserController {
             throw new RuntimeException("Usuário já cadastrado!");
         }
 
-        var user = new User(data);
+        var user = new Users(data);
         repository.save(user);
 
         var uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
@@ -48,7 +48,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetail> returnOne(@PathVariable Long id) {
-        Optional<User> user = repository.findById(id);
+        Optional<Users> user = repository.findById(id);
 
         if(user.isEmpty() || !user.get().getIsActive()) {
             return ResponseEntity.notFound().build();

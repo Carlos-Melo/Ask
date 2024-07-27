@@ -3,7 +3,8 @@ package ask.api.domain.comment;
 import ask.api.domain.comment.dto.CommentCreate;
 import ask.api.domain.comment.dto.CommentUpdate;
 import ask.api.domain.post.Post;
-import ask.api.domain.user.User;
+import ask.api.domain.user.Users;
+import ask.api.domain.user.Users;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -26,7 +27,7 @@ public class Comment {
     private Boolean isSolved;
     private final LocalDate criationDate = LocalDate.now();
     @ManyToOne
-    private User user;
+    private Users user;
     @ManyToOne
     @JsonBackReference
     private Post post;

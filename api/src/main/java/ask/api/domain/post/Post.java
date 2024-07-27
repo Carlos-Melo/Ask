@@ -3,7 +3,7 @@ package ask.api.domain.post;
 import ask.api.domain.comment.Comment;
 import ask.api.domain.post.dto.PostCreate;
 import ask.api.domain.post.dto.PostUpdate;
-import ask.api.domain.user.User;
+import ask.api.domain.user.Users;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -32,7 +32,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne
-    private User user;
+    private Users user;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Comment> comment = new ArrayList<>();

@@ -23,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class User implements UserDetails {
+public class Users implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate criationDate;
 
-    public User(UserCreate data) {
+    public Users(UserCreate data) {
         this.name = data.name();
         this.email = data.email();
         this.password = data.password();

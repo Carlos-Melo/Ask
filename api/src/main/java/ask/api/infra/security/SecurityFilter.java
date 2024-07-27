@@ -1,8 +1,6 @@
 package ask.api.infra.security;
 
-import ask.api.domain.user.User;
-import ask.api.domain.user.UserRepository;
-import ask.api.domain.user.dto.UserDetail;
+import ask.api.domain.user.UsersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +21,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -32,7 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if(tokenJWT != null) {
             var subject = tokenService.getSubject(tokenJWT);
-            UserDetails user = userRepository.findByEmail(subject);
+            UserDetails user = usersRepository.findByEmail(subject);
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
