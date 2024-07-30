@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -23,6 +24,9 @@ public class UserController {
     @Autowired
     private UsersRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping
     @Transactional
     public ResponseEntity create(@RequestBody @Valid UserCreate data, UriComponentsBuilder uriBuilder) {
@@ -31,7 +35,12 @@ public class UserController {
             throw new RuntimeException("Usuário já cadastrado!");
         }
 
-        var user = new Users(data);
+        String encodedPassword = passwordEncoder.encode(data.password());
+
+        UserCreate newUser = new UserCreate(data.name(), data.email(), encodedPassword);
+
+        var user = new Users(newUser);
+
         repository.save(user);
 
         var uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
