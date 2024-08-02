@@ -3,33 +3,34 @@ package ask.api.domain.comment;
 import ask.api.domain.comment.dto.CommentCreate;
 import ask.api.domain.comment.dto.CommentUpdate;
 import ask.api.domain.post.Post;
-import ask.api.domain.user.Users;
-import ask.api.domain.user.Users;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import ask.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Table(name = "comment")
-@Entity(name = "comment")
+
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
+@Entity
+@Table(name = "comment")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String description;
+
     private Boolean isSolved;
-    private final LocalDate criationDate = LocalDate.now();
-    @ManyToOne
-    private Users user;
-    @ManyToOne
-    @JsonBackReference
+
+    private LocalDate criationDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
     public Comment(CommentCreate comment) {
@@ -37,6 +38,7 @@ public class Comment {
         this.isSolved = false;
         this.user = comment.user();
         this.post = comment.post();
+        this.criationDate = LocalDate.now();
     }
 
     public void updateComment(CommentUpdate comment) {

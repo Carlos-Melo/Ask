@@ -5,6 +5,7 @@ import ask.api.domain.post.dto.PostCreate;
 import ask.api.domain.post.dto.PostDetail;
 import ask.api.domain.post.dto.PostList;
 import ask.api.domain.post.dto.PostUpdate;
+import ask.api.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -22,46 +23,45 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class PostController {
 
     @Autowired
-    PostRepository postRepository;
+    PostService postService;
 
     @PostMapping
     @Transactional
     public ResponseEntity create(@RequestBody @Valid PostCreate data, UriComponentsBuilder uriBulder) {
-        var post = new Post(data);
-        postRepository.save(post);
 
-        var uri = uriBulder.path("/post/{id}").buildAndExpand(post.getId()).toUri();
+        var post = postService.savePost(data);
+
+        var uri = uriBulder.path("/post/{id}").buildAndExpand(post.id()).toUri();
 
         return ResponseEntity.created(uri).body(post);
     }
 
     @GetMapping
     public ResponseEntity<Page<PostList>> list(@PageableDefault(sort = "criationDate") Pageable pageable) {
-        var post = postRepository.findAll(pageable).map(PostList::new);
+        var post = postService.findAllPosts(pageable);
 
         return ResponseEntity.ok(post);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostDetail> getPost(@PathVariable Long id) {
-        var post = postRepository.getReferenceById(id);
+        var post = postService.findPostById(id);
 
-        return ResponseEntity.ok(new PostDetail(post));
+        return ResponseEntity.ok(post);
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity<PostDetail> update(@RequestBody @Valid PostUpdate data) {
-        var post = postRepository.getReferenceById(data.id());
-        post.updatePost(data);
+        var post = postService.updatePost(data);
 
-        return ResponseEntity.ok(new PostDetail(post));
+        return ResponseEntity.ok(post);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity delete(@PathVariable Long id) {
-        postRepository.deleteById(id);
+        postService.deletePost(id);
 
         return ResponseEntity.noContent().build();
     }

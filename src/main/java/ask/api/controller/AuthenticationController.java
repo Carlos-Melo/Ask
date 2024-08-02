@@ -1,7 +1,7 @@
 package ask.api.controller;
 
-import ask.api.domain.user.Users;
-import ask.api.domain.user.UsersRepository;
+import ask.api.domain.user.User;
+import ask.api.domain.user.UserRepository;
 import ask.api.domain.user.dto.UserLogin;
 import ask.api.infra.security.TokenDataJWT;
 import ask.api.infra.security.TokenService;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/login")
 public class AuthenticationController {
 
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private AuthenticationManager manager;
@@ -34,7 +34,7 @@ public class AuthenticationController {
         var autenticationToken = new UsernamePasswordAuthenticationToken(user.email(), user.password());
         var autentication = manager.authenticate(autenticationToken);
 
-        var tokenJWT = tokenService.generateToken((Users) autentication.getPrincipal());
+        var tokenJWT = tokenService.generateToken((User) autentication.getPrincipal());
 
         return ResponseEntity.ok(new TokenDataJWT(tokenJWT));
     }

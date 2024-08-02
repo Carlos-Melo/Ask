@@ -4,7 +4,6 @@ import ask.api.domain.user.dto.UserCreate;
 import ask.api.domain.user.dto.UserUpdate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,28 +16,33 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name = "users")
-@Entity(name = "Users")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
-public class Users implements UserDetails {
+@Entity
+@Table(name = "users")
+public class User implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String email;
+
     private String password;
+
     private Boolean isActive;
+
     private byte[] image;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate criationDate;
 
-    public Users(UserCreate data) {
+    public User(UserCreate data) {
         this.name = data.name();
         this.email = data.email();
         this.password = data.password();

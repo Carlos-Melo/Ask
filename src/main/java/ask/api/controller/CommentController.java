@@ -24,6 +24,7 @@ public class CommentController {
     CommentRepository repository;
 
     @PostMapping
+    @Transactional
     public ResponseEntity create(@RequestBody @Valid CommentCreate data, UriComponentsBuilder uriBuilder) {
         var comment = repository.save(new Comment(data));
 

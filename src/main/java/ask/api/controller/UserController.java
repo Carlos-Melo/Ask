@@ -2,6 +2,7 @@ package ask.api.controller;
 
 import ask.api.domain.user.*;
 import ask.api.domain.user.dto.*;
+import ask.api.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -22,26 +23,13 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UsersRepository repository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    UserService userService;
 
     @PostMapping
     @Transactional
     public ResponseEntity create(@RequestBody @Valid UserCreate data, UriComponentsBuilder uriBuilder) {
 
-        if(repository.existsByEmail(data.email())) {
-            throw new RuntimeException("Usuário já cadastrado!");
-        }
-
-        String encodedPassword = passwordEncoder.encode(data.password());
-
-        UserCreate newUser = new UserCreate(data.name(), data.email(), encodedPassword);
-
-        var user = new Users(newUser);
-
-        repository.save(user);
+        var user = userService.saveUser(data);
 
         var uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
 
@@ -50,18 +38,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserListAll>> list(@PageableDefault(sort = {"criationDate"}) Pageable pagination) {
-        var page = repository.findAll(pagination).map(UserListAll::new);
+        var page = userService.findAllUsers(pagination);
 
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetail> returnOne(@PathVariable Long id) {
-        Optional<Users> user = repository.findById(id);
-
-        if(user.isEmpty() || !user.get().getIsActive()) {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<User> user = userService.findUserById(id);
 
         return ResponseEntity.ok(new UserDetail(user.get()));
     }
@@ -69,17 +53,17 @@ public class UserController {
     @PutMapping
     @Transactional
     public ResponseEntity update(@RequestBody @Valid UserUpdate data) {
-        var user = repository.getReferenceById(data.id());
-        user.updateUser(data);
+        var user = userService.findUserById(data.id());
 
-        return ResponseEntity.ok(new UserDetail(user));
+        user.get().updateUser(data);
+
+        return ResponseEntity.ok(new UserDetail(user.get()));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity delete(@PathVariable Long id) {
-        repository.deleteById(id);
-
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
